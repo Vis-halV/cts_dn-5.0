@@ -1,0 +1,17 @@
+# IDEs and Editors
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+*.iml
+
+# Environment Variables
+
+.env
+.env.*
+*.env
+
+# Python cache
+__pycache__/

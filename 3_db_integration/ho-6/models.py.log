@@ -1,0 +1,147 @@
+
+~\OneDrive\Desktop\CTS\git-local\cts_dn-5.0\3_db_integration\ho-6> py models.py
+Creating tables in college_db_orm ...
+2026-06-29 07:51:20,724 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2026-06-29 07:51:20,725 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-06-29 07:51:20,728 INFO sqlalchemy.engine.Engine select current_schema()
+2026-06-29 07:51:20,729 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-06-29 07:51:20,731 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-06-29 07:51:20,732 INFO sqlalchemy.engine.Engine [raw sql] {}
+2026-06-29 07:51:20,732 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-06-29 07:51:20,743 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-29 07:51:20,743 INFO sqlalchemy.engine.Engine [generated in 0.00052s] {'table_name': 'departments', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-29 07:51:20,748 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-29 07:51:20,748 INFO sqlalchemy.engine.Engine [cached since 0.005098s ago] {'table_name': 'students', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-29 07:51:20,749 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-29 07:51:20,750 INFO sqlalchemy.engine.Engine [cached since 0.006878s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-29 07:51:20,751 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-29 07:51:20,751 INFO sqlalchemy.engine.Engine [cached since 0.008246s ago] {'table_name': 'enrollments', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-29 07:51:20,752 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_class.relname
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2026-06-29 07:51:20,752 INFO sqlalchemy.engine.Engine [cached since 0.009514s ago] {'table_name': 'professors', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2026-06-29 07:51:20,754 INFO sqlalchemy.engine.Engine
+CREATE TABLE departments (
+        department_id SERIAL NOT NULL,
+        dept_name VARCHAR(20) NOT NULL,
+        head_of_dept VARCHAR(20),
+        budget NUMERIC(8, 2),
+        PRIMARY KEY (department_id)
+)
+
+
+2026-06-29 07:51:20,754 INFO sqlalchemy.engine.Engine [no key 0.00034s] {}
+2026-06-29 07:51:20,776 INFO sqlalchemy.engine.Engine
+CREATE TABLE students (
+        student_id SERIAL NOT NULL,
+        first_name VARCHAR(16) NOT NULL,
+        last_name VARCHAR(16) NOT NULL,
+        email VARCHAR(32) NOT NULL,
+        date_of_birth DATE,
+        department_id INTEGER,
+        enrollment_year INTEGER,
+        PRIMARY KEY (student_id),
+        UNIQUE (email),
+        FOREIGN KEY(department_id) REFERENCES departments (department_id)
+)
+
+
+2026-06-29 07:51:20,776 INFO sqlalchemy.engine.Engine [no key 0.00048s] {}
+2026-06-29 07:51:20,787 INFO sqlalchemy.engine.Engine
+CREATE TABLE courses (
+        course_id SERIAL NOT NULL,
+        course_name VARCHAR(32) NOT NULL,
+        course_code VARCHAR(8),
+        credits INTEGER,
+        department_id INTEGER,
+        max_seats INTEGER,
+        PRIMARY KEY (course_id),
+        UNIQUE (course_code),
+        FOREIGN KEY(department_id) REFERENCES departments (department_id)
+)
+
+
+2026-06-29 07:51:20,787 INFO sqlalchemy.engine.Engine [no key 0.00045s] {}
+2026-06-29 07:51:20,799 INFO sqlalchemy.engine.Engine
+CREATE TABLE professors (
+        professor_id SERIAL NOT NULL,
+        prof_name VARCHAR(24) NOT NULL,
+        email VARCHAR(32),
+        department_id INTEGER,
+        salary NUMERIC(8, 2),
+        PRIMARY KEY (professor_id),
+        UNIQUE (email),
+        FOREIGN KEY(department_id) REFERENCES departments (department_id)
+)
+
+
+2026-06-29 07:51:20,799 INFO sqlalchemy.engine.Engine [no key 0.00026s] {}
+2026-06-29 07:51:20,806 INFO sqlalchemy.engine.Engine
+CREATE TABLE enrollments (
+        enrollment_id SERIAL NOT NULL,
+        student_id INTEGER,
+        course_id INTEGER,
+        enrollment_date DATE,
+        grade VARCHAR(1) CHECK (grade IN ('A','B','C','D','F')),
+        PRIMARY KEY (enrollment_id),
+        FOREIGN KEY(student_id) REFERENCES students (student_id),
+        FOREIGN KEY(course_id) REFERENCES courses (course_id)
+)
+
+
+2026-06-29 07:51:20,807 INFO sqlalchemy.engine.Engine [no key 0.00038s] {}
+2026-06-29 07:51:20,812 INFO sqlalchemy.engine.Engine COMMIT
+Done. Connect with psql and run \dt to verify.
+~\OneDrive\Desktop\CTS\git-local\cts_dn-5.0\3_db_integration\ho-6> psql -U postgres -h localhost -p 5432
+Password for user postgres:
+
+psql (16.11)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=#
+postgres=# \c college_db_orm
+You are now connected to database "college_db_orm" as user "postgres".
+college_db_orm=# \dt
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | courses     | table | postgres
+ public | departments | table | postgres
+ public | enrollments | table | postgres
+ public | professors  | table | postgres
+ public | students    | table | postgres
+(5 rows)
+
+
+college_db_orm=# \d students
+                                            Table "public.students"
+     Column      |         Type          | Collation | Nullable |                   Default
+-----------------+-----------------------+-----------+----------+----------------------------------------------
+ student_id      | integer               |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name      | character varying(16) |           | not null |
+ last_name       | character varying(16) |           | not null |
+ email           | character varying(32) |           | not null |
+ date_of_birth   | date                  |           |          |
+ department_id   | integer               |           |          |
+ enrollment_year | integer               |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+Foreign-key constraints:
+    "students_department_id_fkey" FOREIGN KEY (department_id) REFERENCES departments(department_id)
+Referenced by:
+    TABLE "enrollments" CONSTRAINT "enrollments_student_id_fkey" FOREIGN KEY (student_id) REFERENCES students(student_id)
+
+
+college_db_orm=#
