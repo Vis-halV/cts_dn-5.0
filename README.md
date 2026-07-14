@@ -27,13 +27,13 @@ The contents of this repository include notes, exercises, examples, and projects
 ## Database Integration
 - [x] Hands-On 01
 - [x] Hands-On 02
-- [ ] Hands-On 03
-- [ ] Hands-On 04
+- [x] Hands-On 03
+- [x] Hands-On 04
 - [x] Hands-On 05
 - [x] Hands-On 06
 - [x] Hands-On 07
 
-**Progress:** `5/7`
+**Progress:** `7/7`
 
 ---
 
@@ -71,10 +71,10 @@ The contents of this repository include notes, exercises, examples, and projects
 | Module | Completed |
 |---------|----------:|
 | Frontend Development | 3/10 |
-| Database Integration | 5/7 |
+| Database Integration | 7/7 |
 | Python Backend Frameworks | 3/10 |
 | QA & Selenium | 3/7 |
-| **Total** | **14/34** |
+| **Total** | **16/34** |
 
 ---
 
