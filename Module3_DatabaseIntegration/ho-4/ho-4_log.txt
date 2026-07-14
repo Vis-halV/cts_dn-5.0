@@ -1,0 +1,69 @@
+college_db=# -- Check the execution plan before adding indexes.
+college_db=# EXPLAIN ANALYZE
+college_db-# SELECT
+college_db-#     s.first_name,
+college_db-#     s.last_name,
+college_db-#     c.course_name
+college_db-# FROM enrollments e
+college_db-# JOIN students s ON s.student_id = e.student_id
+college_db-# JOIN courses c ON c.course_id = e.course_id
+college_db-# WHERE s.enrollment_year = 2022;
+                                                          QUERY PLAN                                                    
+-------------------------------------------------------------------------------------------------------------------------------
+ Nested Loop  (cost=14.67..43.34 rows=8 width=182) (actual time=0.094..0.103 rows=5 loops=1)
+   ->  Hash Join  (cost=14.53..41.74 rows=8 width=104) (actual time=0.053..0.057 rows=5 loops=1)
+         Hash Cond: (e.student_id = s.student_id)
+         ->  Seq Scan on enrollments e  (cost=0.00..23.60 rows=1360 width=8) (actual time=0.019..0.020 rows=8 loops=1)
+         ->  Hash  (cost=14.50..14.50 rows=2 width=104) (actual time=0.019..0.019 rows=8 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               ->  Seq Scan on students s  (cost=0.00..14.50 rows=2 width=104) (actual time=0.010..0.013 rows=8 loops=1)                     Filter: (enrollment_year = 2022)
+                     Rows Removed by Filter: 10
+   ->  Index Scan using courses_pkey on courses c  (cost=0.15..0.20 rows=1 width=86) (actual time=0.008..0.008 rows=1 loops=5)
+         Index Cond: (course_id = e.course_id)
+ Planning Time: 1.134 ms
+ Execution Time: 0.681 ms
+(13 rows)
+
+
+college_db=#
+college_db=# -- Indexes used by the join/filter workload.
+college_db=# CREATE INDEX IF NOT EXISTS idx_students_enrollment_year
+college_db-# ON students (enrollment_year);
+CREATE INDEX
+college_db=#
+college_db=# CREATE UNIQUE INDEX IF NOT EXISTS idx_student_course
+college_db-# ON enrollments (student_id, course_id);
+CREATE INDEX
+college_db=#
+college_db=# CREATE INDEX IF NOT EXISTS idx_course_code
+college_db-# ON courses (course_code);
+CREATE INDEX
+college_db=#
+college_db=# -- Run the plan again after indexing and compare cost/time.
+college_db=# EXPLAIN ANALYZE
+college_db-# SELECT
+college_db-#     s.first_name,
+college_db-#     s.last_name,
+college_db-#     c.course_name
+college_db-# FROM enrollments e
+college_db-# JOIN students s ON s.student_id = e.student_id
+college_db-# JOIN courses c ON c.course_id = e.course_id
+college_db-# WHERE s.enrollment_year = 2022;
+                                                       QUERY PLAN                                                       ------------------------------------------------------------------------------------------------------------------------ Nested Loop  (cost=1.24..3.47 rows=1 width=182) (actual time=0.054..0.081 rows=5 loops=1)
+   Join Filter: (e.course_id = c.course_id)
+   Rows Removed by Join Filter: 8
+   ->  Hash Join  (cost=1.24..2.34 rows=1 width=104) (actual time=0.044..0.049 rows=5 loops=1)
+         Hash Cond: (e.student_id = s.student_id)
+         ->  Seq Scan on enrollments e  (cost=0.00..1.08 rows=8 width=8) (actual time=0.016..0.017 rows=8 loops=1)
+         ->  Hash  (cost=1.23..1.23 rows=1 width=104) (actual time=0.020..0.020 rows=8 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               ->  Seq Scan on students s  (cost=0.00..1.23 rows=1 width=104) (actual time=0.011..0.014 rows=8 loops=1)
+                     Filter: (enrollment_year = 2022)
+                     Rows Removed by Filter: 10
+   ->  Seq Scan on courses c  (cost=0.00..1.06 rows=6 width=86) (actual time=0.002..0.002 rows=3 loops=5)
+ Planning Time: 1.278 ms
+ Execution Time: 0.114 ms
+(14 rows)
+
+
+college_db=#

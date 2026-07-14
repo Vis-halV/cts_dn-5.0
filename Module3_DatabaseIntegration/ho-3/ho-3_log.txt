@@ -1,0 +1,201 @@
+college_db=# -- Students enrolled in more courses than the average number of courses per student.
+college_db=# SELECT
+college_db-#     s.student_id,
+college_db-#     CONCAT(s.first_name, ' ', s.last_name) AS student_name,
+college_db-#     COUNT(e.course_id) AS total_courses
+college_db-# FROM students s
+college_db-# JOIN enrollments e ON s.student_id = e.student_id
+college_db-# GROUP BY s.student_id, s.first_name, s.last_name
+college_db-# HAVING COUNT(e.course_id) > (
+college_db(#     SELECT AVG(course_count)
+college_db(#     FROM (
+college_db(#         SELECT COUNT(*) AS course_count
+college_db(#         FROM enrollments
+college_db(#         GROUP BY student_id
+college_db(#     ) AS avg_count
+college_db(# );
+ student_id | student_name | total_courses
+------------+--------------+---------------
+         10 | Priya Suresh |             2
+          9 | Arjun Mehta  |             2
+(2 rows)
+
+
+college_db=#
+college_db=# -- Courses where no student has received an A grade.
+college_db=# SELECT
+college_db-#     c.course_id,
+college_db-#     c.course_name
+college_db-# FROM courses c
+college_db-# WHERE NOT EXISTS (
+college_db(#     SELECT 1
+college_db(#     FROM enrollments e
+college_db(#     WHERE e.course_id = c.course_id
+college_db(#       AND e.grade = 'A'
+college_db(# );
+ course_id |         course_name
+-----------+-----------------------------
+         2 | Database Management Systems
+         4 | Circuit Theory
+         5 | Thermodynamics
+         7 | Computer Networks
+(4 rows)
+
+
+college_db=#
+college_db=# -- Highest paid professor in each department.
+college_db=# SELECT
+college_db-#     p.professor_id,
+college_db-#     p.prof_name,
+college_db-#     p.department_id,
+college_db-#     p.salary
+college_db-# FROM professors p
+college_db-# WHERE p.salary = (
+college_db(#     SELECT MAX(p2.salary)
+college_db(#     FROM professors p2
+college_db(#     WHERE p2.department_id = p.department_id
+college_db(# );
+ professor_id |     prof_name      | department_id |  salary
+--------------+--------------------+---------------+----------
+            1 | Dr. Anand Krishnan |             1 | 95000.00
+            6 | Dr. Adams          |             1 | 95000.00
+            7 | Dr. Baker          |             2 | 88000.00
+            8 | Dr. Carter         |             3 | 82000.00
+            9 | Dr. Davis          |             4 | 79000.00
+(5 rows)
+
+
+college_db=#
+college_db=# -- Departments with average professor salary greater than 85000.
+college_db=# SELECT *
+college_db-# FROM (
+college_db(#     SELECT
+college_db(#         department_id,
+college_db(#         AVG(salary) AS avg_salary
+college_db(#     FROM professors
+college_db(#     GROUP BY department_id
+college_db(# ) AS avg_salary_table
+college_db-# WHERE avg_salary > 85000;
+ department_id |     avg_salary
+---------------+--------------------
+             1 | 92250.000000000000
+(1 row)
+
+
+college_db=#
+college_db=# -- Task2:
+college_db=#
+college_db=# CREATE OR REPLACE VIEW vw_student_enrollment_summary AS
+college_db-# SELECT
+college_db-#     s.student_id,
+college_db-#     CONCAT(s.first_name, ' ', s.last_name) AS full_name,
+college_db-#     d.dept_name,
+college_db-#     COUNT(e.course_id) AS total_courses,
+college_db-#     AVG(
+college_db(#         CASE e.grade
+college_db(#             WHEN 'A' THEN 4
+college_db(#             WHEN 'B' THEN 3
+college_db(#             WHEN 'C' THEN 2
+college_db(#             WHEN 'D' THEN 1
+college_db(#             WHEN 'F' THEN 0
+college_db(#         END
+college_db(#     ) AS gpa
+college_db-# FROM students s
+college_db-# JOIN departments d ON s.department_id = d.department_id
+college_db-# LEFT JOIN enrollments e ON s.student_id = e.student_id
+college_db-# GROUP BY s.student_id, s.first_name, s.last_name, d.dept_name;
+CREATE VIEW
+college_db=#
+college_db=# CREATE OR REPLACE VIEW vw_course_stats AS
+college_db-# SELECT
+college_db-#     c.course_id,
+college_db-#     c.course_name,
+college_db-#     c.course_code,
+college_db-#     COUNT(e.enrollment_id) AS total_enrollments,
+college_db-#     AVG(
+college_db(#         CASE e.grade
+college_db(#             WHEN 'A' THEN 4
+college_db(#             WHEN 'B' THEN 3
+college_db(#             WHEN 'C' THEN 2
+college_db(#             WHEN 'D' THEN 1
+college_db(#             WHEN 'F' THEN 0
+college_db(#         END
+college_db(#     ) AS avg_gpa
+college_db-# FROM courses c
+college_db-# LEFT JOIN enrollments e ON c.course_id = e.course_id
+college_db-# GROUP BY c.course_id, c.course_name, c.course_code;
+CREATE VIEW
+college_db=#
+college_db=# SELECT *
+college_db-# FROM vw_student_enrollment_summary
+college_db-# WHERE gpa > 3.0;
+ student_id |  full_name   |    dept_name     | total_courses |        gpa
+------------+--------------+------------------+---------------+--------------------
+         10 | Priya Suresh | Computer Science |             2 | 3.5000000000000000
+          9 | Arjun Mehta  | Computer Science |             2 | 3.5000000000000000
+         13 | Vikram Das   | Computer Science |             1 | 4.0000000000000000
+(3 rows)
+
+
+college_db=#
+college_db=# CREATE OR REPLACE PROCEDURE sp_enroll_student(
+college_db(#     IN p_student_id INT,
+college_db(#     IN p_course_id INT,
+college_db(#     IN p_enrollment_date DATE
+college_db(# )
+college_db-# LANGUAGE plpgsql
+college_db-# AS $$
+college_db$# BEGIN
+college_db$#     IF EXISTS (
+college_db$#         SELECT 1
+college_db$#         FROM enrollments
+college_db$#         WHERE student_id = p_student_id
+college_db$#           AND course_id = p_course_id
+college_db$#     ) THEN
+college_db$#         RAISE EXCEPTION 'Student % is already enrolled in course %', p_student_id, p_course_id;
+college_db$#     END IF;
+college_db$#
+college_db$#     INSERT INTO enrollments (student_id, course_id, enrollment_date)
+college_db$#     VALUES (p_student_id, p_course_id, p_enrollment_date);
+college_db$# END;
+college_db$# $$;
+CREATE PROCEDURE
+college_db=#
+college_db=# CREATE TABLE IF NOT EXISTS department_transfer_log (
+college_db(#     log_id SERIAL PRIMARY KEY,
+college_db(#     student_id INT,
+college_db(#     old_department INT,
+college_db(#     new_department INT,
+college_db(#     transfer_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+college_db(# );
+CREATE TABLE
+college_db=#
+college_db=# CREATE OR REPLACE PROCEDURE sp_transfer_student(
+college_db(#     IN p_student INT,
+college_db(#     IN p_new_dept INT
+college_db(# )
+college_db-# LANGUAGE plpgsql
+college_db-# AS $$
+college_db$# DECLARE
+college_db$#     old_dept INT;
+college_db$# BEGIN
+college_db$#     SELECT department_id
+college_db$#     INTO old_dept
+college_db$#     FROM students
+college_db$#     WHERE student_id = p_student;
+college_db$#
+college_db$#     IF old_dept IS NULL THEN
+college_db$#         RAISE EXCEPTION 'Student % was not found', p_student;
+college_db$#     END IF;
+college_db$#
+college_db$#     UPDATE students
+college_db$#     SET department_id = p_new_dept
+college_db$#     WHERE student_id = p_student;
+college_db$#
+college_db$#     INSERT INTO department_transfer_log (student_id, old_department, new_department)
+college_db$#     VALUES (p_student, old_dept, p_new_dept);
+college_db$# END;
+college_db$# $$;
+CREATE PROCEDURE
+college_db=#
+
