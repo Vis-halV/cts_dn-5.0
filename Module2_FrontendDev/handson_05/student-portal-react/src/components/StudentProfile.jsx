@@ -1,4 +1,6 @@
-function StudentProfile() {
+import { useState } from "react";
+
+export function StudentProfile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [semester, setSemester] = useState("");
