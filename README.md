@@ -41,15 +41,15 @@ The contents of this repository include notes, exercises, examples, and projects
 - [x] Hands-On 01
 - [x] Hands-On 02
 - [x] Hands-On 03
-- [ ] Hands-On 04
-- [ ] Hands-On 05
+- [x] Hands-On 04
+- [x] Hands-On 05
 - [ ] Hands-On 06
 - [ ] Hands-On 07
 - [ ] Hands-On 08
 - [ ] Hands-On 09
 - [ ] Hands-On 10
 
-**Progress:** `3/10`
+**Progress:** `5/10`
 
 ---
 
@@ -74,7 +74,7 @@ The contents of this repository include notes, exercises, examples, and projects
 | Database Integration | 7/7 |
 | Python Backend Frameworks | 3/10 |
 | QA & Selenium | 3/7 |
-| **Total** | **19/34** |
+| **Total** | **21/34** |
 
 ---
 
