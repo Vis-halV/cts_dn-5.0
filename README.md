@@ -18,9 +18,9 @@ The contents of this repository include notes, exercises, examples, and projects
 - [x] Hands-On 07
 - [x] Hands-On 08
 - [x] Hands-On 09
-- [ ] Hands-On 10
+- [x] Hands-On 10
 
-**Progress:** `9/10`
+**Progress:** `9.5/10`
 
 ---
 
@@ -70,11 +70,11 @@ The contents of this repository include notes, exercises, examples, and projects
 
 | Module | Completed |
 |---------|----------:|
-| Frontend Development | 9/10 |
+| Frontend Development | 9.5/10 |
 | Database Integration | 7/7 |
 | Python Backend Frameworks | 7/10 |
 | QA & Selenium | 7/7 |
-| **Total** | **30/34** |
+| **Total** | **31/34** |
 
 ---
 
